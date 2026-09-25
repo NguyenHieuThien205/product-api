@@ -1,0 +1,17 @@
+const express = require("express");
+const productRoutes = require("./routes/product.routes");
+
+const app = express();
+
+app.use(express.json());
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "Product API is running",
+  });
+});
+
+app.use("/api/products", productRoutes);
+
+module.exports = app;
