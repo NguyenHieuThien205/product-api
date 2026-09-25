@@ -1,0 +1,59 @@
+name: Product API CD - Local Docker
+
+on:
+  workflow_run:
+    workflows:
+      - "Product API CD - Docker Hub"
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Pull latest Docker images
+        shell: powershell
+        run: |
+          docker compose -f docker-compose-prod.yaml pull
+
+      - name: Deploy production
+        shell: powershell
+        run: |
+          docker compose -f docker-compose-prod.yaml up -d --force-recreate
+
+      - name: Show production status
+        shell: powershell
+        run: |
+          docker compose -f docker-compose-prod.yaml ps
+
+      - name: Health check
+        shell: powershell
+        run: |
+          for ($i = 1; $i -le 30; $i++) {
+            try {
+              $response = Invoke-WebRequest `
+                -Uri http://localhost:3000/health `
+                -UseBasicParsing
+
+              if ($response.StatusCode -eq 200) {
+                Write-Host "Product API is healthy"
+                exit 0
+              }
+            }
+            catch {
+              Write-Host "Waiting for Product API..."
+            }
+
+            Start-Sleep -Seconds 2
+          }
+
+          Write-Host "Product API healthcheck failed"
+          docker compose -f docker-compose-prod.yaml logs --tail 50 product-api-prod
+          exit 1
