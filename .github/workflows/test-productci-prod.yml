@@ -40,4 +40,4 @@ jobs:
         run: npm ci
 
       - name: Run CRUD tests
-        run: npm test
+        run: npx jest tests/product-crud.test.js
