@@ -37,7 +37,7 @@ services:
       MONGODB_URI: mongodb://mongodb-prod:27017/productdb
 
     ports:
-      - "3000:3000"
+      - "3001:3000"
 
     networks:
       - product-api-prod-network

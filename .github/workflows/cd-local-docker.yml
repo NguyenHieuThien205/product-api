@@ -39,7 +39,7 @@ jobs:
           for ($i = 1; $i -le 30; $i++) {
             try {
               $response = Invoke-WebRequest `
-                -Uri http://localhost:3000/health `
+                -Uri http://localhost:3001/health `
                 -UseBasicParsing
 
               if ($response.StatusCode -eq 200) {
