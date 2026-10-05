@@ -14,9 +14,9 @@ jest.setTimeout(30000);
 describe("Product CRUD API", () => {
   beforeAll(async () => {
     await mongoose.connect(MONGODB_URI, {
+      dbName: process.env.TEST_DB_NAME || "productdb_test",
       serverSelectionTimeoutMS: 10000,
     });
-
     await Product.deleteMany({});
   });
 
